@@ -5,6 +5,7 @@ import requests
 import json
 from datetime import datetime
 from typing import Dict, List, Optional
+from flask import Flask, url_for, request
 
 class StockAnalysisAgent:
     def __init__(self, serper_api_key: str, openai_api_key: str):
