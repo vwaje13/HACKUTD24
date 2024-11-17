@@ -121,7 +121,7 @@ class StockAnalysisAgent:
                 "title": article.get('title', ''),
                 "time_ago": article.get('date', ''),
                 "link": article.get('link', ''),
-                "effect_percentage": impact['effect_percentage'],
+                "effect_percentage": impact ['effect_percentage'],
                 "effect_type": impact['effect_type'],
                 "explanation": impact['explanation']
             })
