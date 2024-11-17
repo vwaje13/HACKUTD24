@@ -1,66 +1,144 @@
 import React, { useState } from 'react';
 import { ArrowLeft, ArrowRight, ChevronDown, Upload } from 'lucide-react';
+import stockImage from './stock_image.jpg'
+
 
 const jsonData = {
-  stocks: [
+  "stocks": [
     {
-      symbol: "CMG",
-      price: 1825.34,
-      change: { value: -12.45, percentage: -0.68 },
-      news: [
+      "symbol": "CMG",
+      "price": 0.0,
+      "change": {
+        "value": 0.0,
+        "percentage": 0.0
+      },
+      "news": [
         {
-          source: "Investor's Business Daily",
-          title: "Chipotle Mexican Grill Stock Gets A RS Rating Bump",
-          time: "1 day ago",
-          impact: {
-            percentage: 20,
-            effect: "Positive",
-            description: "The Relative Strength (RS) rating bump indicates that Chipotle Mexican Grill (CMG) stock is outperforming a significant portion of the market, signaling increased investor confidence and potential for further growth.",
-          },
+          "source": "MarketBeat",
+          "title": "Chipotle Mexican Grill, Inc. (NYSE:CMG) Stock Position Lowered by Victory Capital Management Inc.",
+          "time": "1 hour ago",
+          "link": "https://www.marketbeat.com/instant-alerts/chipotle-mexican-grill-inc-nysecmg-stock-position-lowered-by-victory-capital-management-inc-2024-11-17/",
+          "impact": {
+            "percentage": 5,
+            "effect": "Negative",
+            "description": "Victory Capital Management Inc. lowering its stock position in Chipotle Mexican Grill, Inc. (CMG) may indicate a loss of investor confidence, potentially leading to a slight decrease in stock value."
+          }
         },
         {
-          source: "The Motley Fool",
-          title: "3 Must-Know Facts About Chipotle Before You Buy the Stock",
-          time: "22 hours ago",
-          impact: {
-            percentage: 5,
-            effect: "Positive",
-            description: "The article highlights three key facts about Chipotle, likely increasing investor awareness and potentially driving interest in the stock, but the overall impact is minimal as it is an informational article rather than a major news event.",
-          },
+          "source": "Investor's Business Daily",
+          "title": "Chipotle Mexican Grill Stock Gets A RS Rating Bump",
+          "time": "1 day ago",
+          "link": "https://www.investors.com/news/chipotle-mexican-grill-stock-gets-a-rs-rating-bump/",
+          "impact": {
+            "percentage": 20,
+            "effect": "Positive",
+            "description": "The Relative Strength (RS) rating bump indicates that Chipotle Mexican Grill (CMG) stock is outperforming a significant portion of the market, signaling increased investor confidence and potential for further growth."
+          }
         },
-      ],
+        {
+          "source": "Yahoo Finance",
+          "title": "YUMC vs. CMG: Which Stock Is the Better Value Option?",
+          "time": "2 days ago",
+          "link": "https://finance.yahoo.com/news/yumc-vs-cmg-stock-better-164007973.html",
+          "impact": {
+            "percentage": 5,
+            "effect": "Positive",
+            "description": "The article compares CMG stock to YUMC, framing it as a value option, which may attract investors and increase stock price."
+          }
+        },
+        {
+          "source": "The Motley Fool",
+          "title": "3 Must-Know Facts About Chipotle Before You Buy the Stock",
+          "time": "1 day ago",
+          "link": "https://www.fool.com/investing/2024/11/16/3-must-know-facts-chipotle-before-you-buy-stock/",
+          "impact": {
+            "percentage": 5,
+            "effect": "Positive",
+            "description": "The article highlights three key facts about Chipotle, likely increasing investor awareness and confidence in the stock, but the impact is minimal as it does not reveal significant new information."
+          }
+        },
+        {
+          "source": "Business Wire",
+          "title": "CMG INVESTOR ALERT: Robbins Geller Rudman & Dowd LLP Announces that Chipotle Mexican Grill, Inc. Investors with Substantial Losses Have Opportunity to Lead Class Action Lawsuit",
+          "time": "3 days ago",
+          "link": "https://www.businesswire.com/news/home/20241113604406/en/CMG-INVESTOR-ALERT-Robbins-Geller-Rudman-Dowd-LLP-Announces-that-Chipotle-Mexican-Grill-Inc.-Investors-with-Substantial-Losses-Have-Opportunity-to-Lead-Class-Action-Lawsuit",
+          "impact": {
+            "percentage": -8,
+            "effect": "Negative",
+            "description": "The announcement of a potential class action lawsuit against Chipotle Mexican Grill, Inc. may lead to a decrease in investor confidence, potentially causing a slight decline in the stock price as investors become cautious about the company's future prospects."
+          }
+        }
+      ]
     },
     {
-      symbol: "NVDA",
-      price: 478.56,
-      change: { value: 15.67, percentage: 3.39 },
-      news: [
+      "symbol": "NVDA",
+      "price": 0.0,
+      "change": {
+        "value": 0.0,
+        "percentage": 0.0
+      },
+      "news": [
         {
-          source: "The Motley Fool",
-          title: "Prediction: Nvidia Stock Is Going to Stall Out on Nov. 20",
-          time: "23 hours ago",
-          impact: {
-            percentage: -8,
-            effect: "Negative",
-            description: "The article predicts that Nvidia's stock will stall on Nov. 20, indicating a potential short-term decline or lack of growth, which may negatively impact investor confidence and stock price.",
-          },
+          "source": "The Motley Fool",
+          "title": "Should You Buy Nvidia Stock Before Nov. 20? Wall Street Has a Compelling Answer.",
+          "time": "3 hours ago",
+          "link": "https://www.fool.com/investing/2024/11/17/should-you-buy-nvidia-stock-before-nov-20-wall-str/",
+          "impact": {
+            "percentage": 8,
+            "effect": "Positive",
+            "description": "The article from The Motley Fool presents a positive outlook on Nvidia stock, suggesting that Wall Street has a compelling reason to buy the stock before Nov. 20. This implies that there is optimism about the company's performance, which could lead to an increase in stock price."
+          }
         },
         {
-          source: "Yahoo Finance",
-          title: "NVIDIA Corporation (NVDA): Raymond James Raises Target to $170",
-          time: "9 hours ago",
-          impact: {
-            percentage: 20,
-            effect: "Positive",
-            description: "Raymond James' increased target price to $170, driven by strong demand for NVIDIA's Hopper and Blackwell GPUs, indicates a positive outlook for NVDA stock, potentially leading to increased investor confidence and higher stock prices.",
-          },
+          "source": "Yahoo",
+          "title": "Nvidia Stock Could Soar Between 10% and 28%, According to Select Wall Street Analysts. Is the Stock a Buy Before Nov. 20?",
+          "time": "1 day ago",
+          "link": "https://www.yahoo.com/finance/news/nvidia-stock-could-soar-between-115000056.html",
+          "impact": {
+            "percentage": 19,
+            "effect": "Positive",
+            "description": "Select Wall Street analysts predict a potential 10% to 28% increase in Nvidia stock, indicating a positive outlook and potential buying opportunity before Nov. 20."
+          }
         },
-      ],
-    },
-  ],
+        {
+          "source": "MarketWatch",
+          "title": "Will Nvidia\u2019s earnings report signal a stock-market pullback?",
+          "time": "1 day ago",
+          "link": "https://www.marketwatch.com/story/will-nvidias-earnings-report-signal-a-stock-market-pullback-02cfcec5",
+          "impact": {
+            "percentage": 8,
+            "effect": "Negative",
+            "description": "The article suggests that Nvidia's earnings report may signal a stock-market pullback, implying a potential decline in NVDA stock value. This could lead to a modest negative impact on the stock price as investors may become cautious ahead of the earnings report."
+          }
+        },
+        {
+          "source": "Benzinga",
+          "title": "Nvidia Reveals 3.6% Stake In Applied Digital, Stock Soars",
+          "time": "1 day ago",
+          "link": "https://www.benzinga.com/news/24/11/42016662/nvidia-reveals-3-6-stake-in-applied-digital-stock-soars",
+          "impact": {
+            "percentage": 8,
+            "effect": "Positive",
+            "description": "Nvidia's 3.6% stake in Applied Digital has led to a surge in NVDA stock, indicating investor confidence in the company's strategic investment decisions."
+          }
+        },
+        {
+          "source": "TheStreet",
+          "title": "Nvidia results will rock markets",
+          "time": "2 hours ago",
+          "link": "https://www.thestreet.com/finance/nvidia-results-will-rock-markets",
+          "impact": {
+            "percentage": 80,
+            "effect": "Positive",
+            "description": "The article title 'Nvidia results will rock markets' from a reputable financial source, TheStreet, suggests that Nvidia's upcoming results are expected to have a significant and positive impact on the market, implying strong financial performance and potentially driving up the stock price."
+          }
+        }
+      ]
+    }
+  ]
 };
 
-const NewsCard = ({ source, time, title, effect, sentiment, stockName, stockPrice, priceChange, percentChange }) => (
+const NewsCard = ({ source, time, title, description, effect, sentiment, stockName, stockPrice, priceChange, percentChange }) => (
   <div className="w-80 p-3 bg-white rounded-2xl border border-gray-200 flex-col gap-3 flex">
     <div className="h-40 rounded-lg flex justify-center items-center">
       <img className="w-80 h-48 rounded-lg object-cover" src="/api/placeholder/320/192" alt="News thumbnail" />
@@ -101,6 +179,7 @@ const NewsCard = ({ source, time, title, effect, sentiment, stockName, stockPric
           }}
         />
       </div>
+      <div className="text-gray-600 text-sm font-medium">{description}</div>
 
     </div>
   </div>
@@ -164,6 +243,7 @@ const App = () => {
                 source={news.source}
                 time={news.time}
                 title={news.title}
+                description={news.impact.description}
                 effect={news.impact.percentage}
                 sentiment={news.impact.effect}
                 stockName={news.stock.symbol}
