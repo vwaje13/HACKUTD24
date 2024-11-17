@@ -1,6 +1,7 @@
 # main.py
 
 import os
+from app import results
 from dotenv import load_dotenv
 from agents import StockAnalysisAgent
 from typing import List, Dict
@@ -65,7 +66,7 @@ def main():
         app = TradeTrends()
         
         # Example portfolio
-        portfolio = ["CMG", "NVDA"]
+        portfolio = results
         
         # Get analysis
         analysis = app.analyze_portfolio(portfolio)
