@@ -35,6 +35,7 @@ class TradeTrends:
                         "source": article['source'],
                         "title": article['title'],
                         "time": article['time_ago'],
+                        "link": article['link'],
                         "impact": {
                             "percentage": article['effect_percentage'],
                             "effect": article['effect_type'],

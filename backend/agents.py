@@ -10,7 +10,7 @@ class StockAnalysisAgent:
     def __init__(self, serper_api_key: str, openai_api_key: str):
         self.serper_api_key = 'c20983719a234f567382ff9bbd1b9d6e6c933c97'
         self.client = OpenAI(
-            api_key= 'dc4d7e8c-98c0-4dc6-b6c6-67879269d31f',
+            api_key='dc4d7e8c-98c0-4dc6-b6c6-67879269d31f',
             base_url="https://api.sambanova.ai/v1",
         )
         
@@ -120,6 +120,7 @@ class StockAnalysisAgent:
                 "source": article.get('source', ''),
                 "title": article.get('title', ''),
                 "time_ago": article.get('date', ''),
+                "link": article.get('link', ''),
                 "effect_percentage": impact['effect_percentage'],
                 "effect_type": impact['effect_type'],
                 "explanation": impact['explanation']
