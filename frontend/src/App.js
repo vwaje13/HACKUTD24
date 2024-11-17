@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ArrowLeft, ArrowRight, ChevronDown, Upload } from 'lucide-react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { ArrowLeft, ArrowRight, ChevronDown, Upload, X } from 'lucide-react';
 import stockImage from './stock_image.jpg'
 
 
@@ -185,36 +185,231 @@ const NewsCard = ({ source, time, title, description, effect, sentiment, stockNa
   </div>
 );
 
-const UploadModal = ({ onClose }) => (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div className="w-96 px-11 py-8 bg-white rounded-3xl flex-col gap-5">
-      <div className="text-2xl font-semibold">Upload Documents to get started</div>
-      <div className="h-px bg-gray-300" />
-      <div className="flex-col gap-8">
-        <div className="border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center">
-          <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <div className="text-gray-600 text-xl font-semibold">Upload .pdf, .doc, .docx, .txt files</div>
-        </div>
-        <div className="flex justify-end gap-2">
-          <button
-            onClick={onClose}
-            className="px-4 py-3 bg-gray-100 rounded-xl text-sm font-semibold"
-          >
-            Cancel
-          </button>
-          <button className="px-4 py-3 bg-blue-600 text-white rounded-xl text-sm font-semibold flex items-center gap-2">
-            Save & Continue
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-    </div>
+const ErrorAlert = ({ message, onClose }) => (
+  <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg relative mb-4">
+    <span className="block sm:inline">{message}</span>
+    <button
+      onClick={onClose}
+      className="absolute top-0 bottom-0 right-0 px-4 py-3"
+    >
+      <X className="h-4 w-4" />
+    </button>
   </div>
 );
 
+
+const UploadModal = ({ onClose, onSuccess }) => {
+  const [files, setFiles] = useState([]);
+  const [dragActive, setDragActive] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleDrag = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  }, []);
+
+  const handleDrop = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    const validFiles = Array.from(e.dataTransfer.files).filter(file => {
+      return file.type === 'application/pdf' || file.name.endsWith('.pdf');
+    });
+
+    setFiles(prev => [...prev, ...validFiles]);
+  }, []);
+
+  const handleFileInput = useCallback((e) => {
+    const validFiles = Array.from(e.target.files).filter(file => {
+      return file.type === 'application/pdf' || file.name.endsWith('.pdf');
+    });
+
+    setFiles(prev => [...prev, ...validFiles]);
+  }, []);
+
+  const removeFile = useCallback((indexToRemove) => {
+    setFiles(prev => prev.filter((_, index) => index !== indexToRemove));
+  }, []);
+
+  const handleSubmit = async () => {
+    if (files.length === 0) return;
+
+    setUploading(true);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      files.forEach((file, index) => {
+        formData.append(`file-${index}`, file);
+      });
+
+      const response = await fetch('http://localhost:5000/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Upload failed');
+      }
+
+      const data = await response.json();
+      onSuccess?.(data);
+      onClose();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+      <div className="w-96 px-11 py-8 bg-white rounded-3xl flex-col gap-5">
+        <div className="text-2xl font-semibold">Upload Documents to get started</div>
+        <div className="h-px bg-gray-300" />
+        
+        {error && (
+          <ErrorAlert 
+            message={error} 
+            onClose={() => setError(null)} 
+          />
+        )}
+        
+        <div className="flex-col gap-8">
+          <div
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
+            className={`border-2 border-dashed rounded-2xl p-8 text-center transition-colors ${
+              dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+            }`}
+          >
+            <input
+              type="file"
+              multiple
+              accept=".pdf"
+              onChange={handleFileInput}
+              className="hidden"
+              id="file-upload"
+            />
+            <label htmlFor="file-upload" className="cursor-pointer">
+              <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <div className="text-gray-600 text-xl font-semibold">
+                Drop files here or click to upload
+              </div>
+              <div className="text-gray-400 text-sm mt-2">
+                Accepted format: PDF
+              </div>
+            </label>
+          </div>
+
+          {files.length > 0 && (
+            <div className="mt-4">
+              <div className="text-sm font-medium text-gray-700 mb-2">
+                Selected files ({files.length}):
+              </div>
+              <div className="space-y-2">
+                {files.map((file, index) => (
+                  <div
+                    key={`${file.name}-${index}`}
+                    className="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
+                  >
+                    <div className="text-sm truncate max-w-[200px]">
+                      {file.name}
+                    </div>
+                    <button
+                      onClick={() => removeFile(index)}
+                      className="text-gray-500 hover:text-red-500"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="flex justify-end gap-2 mt-4">
+            <button
+              onClick={onClose}
+              className="px-4 py-3 bg-gray-100 rounded-xl text-sm font-semibold"
+              disabled={uploading}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSubmit}
+              disabled={files.length === 0 || uploading}
+              className={`px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-2 ${
+                files.length === 0 || uploading
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-blue-600 text-white'
+              }`}
+            >
+              {uploading ? 'Uploading...' : 'Upload & Continue'}
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const App = () => {
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [portfolioData, setPortfolioData] = useState(null);
 
+  useEffect(() => {
+    fetchPortfolioData();
+  }, []);
+
+  const fetchPortfolioData = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/portfolio');
+      if (!response.ok) throw new Error('Failed to fetch portfolio data');
+      const data = await response.json();
+      setPortfolioData(data.portfolio);
+    } catch (error) {
+      console.error('Error fetching portfolio:', error);
+    }
+  };
+
+  const handleUploadSuccess = (data) => {
+    // Refresh portfolio data after successful upload
+    fetchPortfolioData();
+  };
+
+  const handleUpload = async (formData) => {
+    try {
+      // Replace with your actual API endpoint
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+      
+      // Handle successful upload
+      // You might want to refresh your data or show a success message
+    } catch (error) {
+      // Handle error
+      console.error('Upload error:', error);
+      // Show error message to user
+    }
+  };
+  
   // Flatten and sort all news articles by impact percentage
   const sortedNews = jsonData.stocks
     .flatMap(stock => stock.news.map(news => ({ ...news, stock })))
@@ -332,7 +527,12 @@ const App = () => {
 
       </main>
 
-      {showUploadModal && <UploadModal onClose={() => setShowUploadModal(false)} />}
+      {showUploadModal && (
+        <UploadModal 
+          onClose={() => setShowUploadModal(false)}
+          onSuccess={handleUploadSuccess}
+        />
+      )}
     </div>
   );
 };

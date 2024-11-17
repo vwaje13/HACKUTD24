@@ -3,24 +3,26 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# API Configuration
-SAMBANOVA_API_KEY = os.getenv('SAMBANOVA_API_KEY')
-
 # Vector Database Configuration
-VECTOR_DB_PATH = "vectordb"
-COLLECTION_NAME = "investment_documents"
+VECTOR_DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vectordb')
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
 
 # Document Processing Configuration
-CHUNK_SIZE = 1000
-CHUNK_OVERLAP = 200
+MAX_CHARACTERS = 2000
+NEW_AFTER_N_CHARS = 1500
+COMBINE_TEXT_UNDER_N_CHARS = 500
+K_RETRIEVED_DOCUMENTS = 5
 
 # LLM Configuration
 LLM_CONFIG = {
-    "api": "sncloud",
-    "temperature": 0.0,
+    "type": "sncloud",
+    "model": "Meta-Llama-3.1-70B-Instruct",
+    "coe": False,
     "do_sample": False,
-    "max_tokens": 1200,
-    "model": "Meta-Llama-3.1-70B-Instruct"
+    "max_tokens_to_generate": 1200,
+    "temperature": 0.0,
+    "select_expert": None,
+    "streaming": True
 }
 
 # Embedding Configuration
@@ -31,6 +33,4 @@ EMBEDDING_CONFIG = {
     "select_expert": "e5-mistral-7b-instruct"
 }
 
-# File Storage
-UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'pdf'}

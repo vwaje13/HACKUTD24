@@ -4,6 +4,8 @@ import os
 from dotenv import load_dotenv
 from agents import StockAnalysisAgent
 from typing import List, Dict
+from flask import Flask, url_for, request
+
 
 class TradeTrends:
     def __init__(self):
