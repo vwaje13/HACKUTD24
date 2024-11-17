@@ -20,22 +20,31 @@ from langchain_core.retrievers import BaseRetriever
 from langchain_core.vectorstores.base import VectorStoreRetriever
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
+# Replace this import
+# from langchain_core.pydantic_v1 import BaseModel
+
+# With this import
+from pydantic import BaseModel
+
+# If you need to maintain compatibility with Pydantic v1, use:
+# from pydantic.v1 import BaseModel
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 kit_dir = os.path.abspath(os.path.join(current_dir, '..'))
 repo_dir = os.path.abspath(os.path.join(kit_dir, '..'))
 sys.path.append(kit_dir)
 sys.path.append(repo_dir)
 
-from utils.model_wrappers.api_gateway import APIGateway
-from utils.vectordb.vector_db import VectorDb
-from utils.visual.env_utils import get_wandb_key
+from helpers.api_gateway import APIGateway
+from helpers.vector_db import VectorDb
+from helpers.env_utils import get_wandb_key
 
 CONFIG_PATH = os.path.join(kit_dir, 'config.yaml')
 PERSIST_DIRECTORY = os.path.join(kit_dir, 'data/my-vector-db')
 
 load_dotenv(os.path.join(repo_dir, '.env'))
 
-from utils.parsing.sambaparse import parse_doc_universal
+from helpers.sambaparse import parse_doc_universal
 
 # Configure the logger
 logging.basicConfig(
