@@ -15,12 +15,36 @@ class TradeTrends:
 
     def analyze_portfolio(self, tickers: List[str]) -> Dict:
         """Analyze multiple stocks in a portfolio."""
-        portfolio_analysis = {}
+        portfolio_analysis = {"stocks": []}
         
         for ticker in tickers:
             try:
                 analysis = self.agent.get_stock_analysis(ticker)
-                portfolio_analysis[ticker] = analysis
+                formatted_analysis = {
+                    "symbol": ticker,
+                    "price": analysis['price'],
+                    "change": {
+                        "value": analysis['change'],
+                        "percentage": analysis['change_percent']
+                    },
+                    "news": []
+                }
+                
+                for article in analysis['articles']:
+                    formatted_article = {
+                        "source": article['source'],
+                        "title": article['title'],
+                        "time": article['time_ago'],
+                        "impact": {
+                            "percentage": article['effect_percentage'],
+                            "effect": article['effect_type'],
+                            "description": article['explanation']
+                        }
+                    }
+                    formatted_analysis["news"].append(formatted_article)
+                
+                portfolio_analysis["stocks"].append(formatted_analysis)
+                
             except Exception as e:
                 print(f"Error analyzing {ticker}: {e}")
                 continue
@@ -29,20 +53,8 @@ class TradeTrends:
 
     def format_output(self, portfolio_analysis: Dict) -> None:
         """Format and print the analysis in TradeTrends style."""
-        print("\n=== Briefing ===")
-        
-        for ticker, analysis in portfolio_analysis.items():
-            print(f"\nStock: {ticker}")
-            print(f"Price: ${analysis['price']:.2f}")
-            print(f"Change: ${analysis['change']:.2f} ({analysis['change_percent']:.1f}%)")
-            
-            print("\nRecent News and Impact:")
-            for article in analysis['articles']:
-                print(f"\nSource: {article['source']}")
-                print(f"Title: {article['title']}")
-                print(f"Time: {article['time_ago']}")
-                print(f"{article['effect_percentage']}% {article['effect_type']}")
-                print(f"Impact: {article['explanation']}")
+        import json
+        print(json.dumps(portfolio_analysis, indent=2))
 
 def main():
     try:
