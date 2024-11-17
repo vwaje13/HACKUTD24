@@ -247,12 +247,14 @@ const UploadModal = ({ onClose, onSuccess }) => {
     try {
       const formData = new FormData();
       files.forEach((file, index) => {
-        formData.append(`file-${index}`, file);
+        formData.append(`file${index}`, file);  // Changed from file-${index} to file${index}
       });
 
       const response = await fetch('http://localhost:5000/api/upload', {
         method: 'POST',
         body: formData,
+        // Remove any headers that might interfere with FormData
+        // The browser will set the correct Content-Type automatically
       });
 
       if (!response.ok) {
@@ -261,9 +263,11 @@ const UploadModal = ({ onClose, onSuccess }) => {
       }
 
       const data = await response.json();
+      console.log('Upload successful:', data);  // Add this for debugging
       onSuccess?.(data);
       onClose();
     } catch (err) {
+      console.error('Upload error:', err);  // Add this for debugging
       setError(err.message);
     } finally {
       setUploading(false);
@@ -375,10 +379,20 @@ const App = () => {
 
   const fetchPortfolioData = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/portfolio');
-      if (!response.ok) throw new Error('Failed to fetch portfolio data');
+      const response = await fetch('http://localhost:5000/api/portfolio', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch portfolio data');
+      }
+      
       const data = await response.json();
-      setPortfolioData(data.portfolio);
+      console.log('Portfolio data:', data);  // Add this for debugging
+      setPortfolioData(data);
     } catch (error) {
       console.error('Error fetching portfolio:', error);
     }
