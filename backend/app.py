@@ -4,6 +4,7 @@ import os
 import logging
 from documenthandler import DocumentHandler
 from extraction import InvestmentExtractor
+from ai import TradeTrends
 import config
 
 # Configure logging
@@ -36,6 +37,29 @@ def allowed_file(filename: str) -> bool:
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 init_directories()
+
+@app.route('/api/analyze_portfolio', methods=['POST'])
+def analyze_portfolio():
+    """Analyze portfolio of stocks"""
+    # Validate input
+    if not request.is_json:
+        return jsonify({'error': 'Request must be JSON'}), 400
+    
+    tickers = request.json.get('tickers', [])
+    if not tickers:
+        return jsonify({'error': 'No stock tickers provided'}), 400
+    
+    try:
+        # Initialize TradeTrends
+        app = TradeTrends()
+        portfolio_analysis = app.analyze_portfolio(tickers)
+        app.format_output(portfolio_analysis)
+        
+        return jsonify(portfolio_analysis), 200
+        
+    except Exception as e:
+        logger.error(f"Error analyzing portfolio: {str(e)}")
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/upload', methods=['POST'])
 def upload_file():
