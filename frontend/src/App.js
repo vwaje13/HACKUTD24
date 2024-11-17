@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowRight, Upload } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChevronDown, Upload } from 'lucide-react';
 
 const jsonData = {
   stocks: [
@@ -87,6 +87,21 @@ const NewsCard = ({ source, time, title, effect, sentiment, stockName, stockPric
           </div>
         </div>
       </div>
+      <div className="h-3 bg-gradient-to-r from-green-600 via-gray-600 to-red-600 rounded-full relative">
+        {/* Central marker */}
+        <div className="w-0.5 h-4 bg-white absolute" style={{ left: '50%' }} />
+
+        {/* Effect marker */}
+        <div
+          className="w-4 h-4 bg-white rounded-full border-2 border-gray-200 absolute top-1/2 -translate-y-1/2"
+          style={{
+            left: sentiment === 'Positive'
+              ? `${45 - (effect / 2)}%` // Positive moves right
+              : `${50 + (Math.abs(effect) / 2)}%`, // Negative moves left
+          }}
+        />
+      </div>
+
     </div>
   </div>
 );
@@ -159,6 +174,82 @@ const App = () => {
             ))}
           </div>
         </section>
+      
+        <section className="mt-12">
+          <h2 className="text-2xl font-semibold mb-6">Your Investments</h2>
+          <div className="bg-white rounded-2xl border border-gray-200 p-4">
+            {jsonData.stocks.map((stock, stockIndex) => {
+              // Sort the news array for this stock by percentage effect in descending order
+              const sortedNews = [...stock.news].sort((a, b) => b.impact.percentage - a.impact.percentage);
+
+              return (
+                <div key={stockIndex} className="mb-8">
+                  <div className="flex justify-between items-center mb-4">
+                    <div className="text-xl">
+                      Stock: <span className="font-semibold">{stock.symbol}</span>
+                      <span className="text-gray-600"> ({stock.symbol})</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-600">today:</span>
+                      <span className="font-medium">${stock.price.toFixed(2)}</span>
+                      <div
+                        className={`px-3 py-2 rounded-full text-white ${
+                          stock.change.value < 0 ? 'bg-red-600' : 'bg-green-600'
+                        }`}
+                      >
+                        {stock.change.value > 0 ? '+' : ''}
+                        ${stock.change.value.toFixed(2)} ({stock.change.percentage.toFixed(2)}%)
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center mb-4">
+                    <div className="flex gap-2">
+                      <button className="p-2 bg-gray-100 rounded-full border">
+                        <ArrowLeft className="w-4 h-4" />
+                      </button>
+                      <button className="p-2 bg-gray-100 rounded-full border">
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 overflow-x-auto">
+                    {sortedNews.map((news, newsIndex) => (
+                      <div
+                        key={`${stock.symbol}-${newsIndex}`}
+                        className="min-w-[280px] p-3 bg-white rounded-xl border border-gray-200"
+                      >
+                        <div className="mb-3">
+                          <div
+                            className={`px-2 py-1 ${
+                              news.impact.effect === 'Negative'
+                                ? 'bg-red-50 text-red-600'
+                                : 'bg-green-50 text-green-600'
+                            } rounded-full inline-flex`}
+                          >
+                            <div className="text-xs font-medium">
+                              {news.impact.percentage}% {news.impact.effect} Effect
+                            </div>
+                          </div>
+                        </div>
+                        <div className="mb-4">
+                          <h3 className="text-xl font-semibold mb-2">{news.title}</h3>
+                          <div className="flex justify-between items-center">
+                            <div className="text-gray-600 text-sm font-medium">{news.source}</div>
+                            <div className="text-gray-400 text-xs font-medium">{news.time}</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+
       </main>
 
       {showUploadModal && <UploadModal onClose={() => setShowUploadModal(false)} />}
