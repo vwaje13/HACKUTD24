@@ -63,24 +63,8 @@ def extract_stock_info(text: str) -> List[Dict[str, Any]]:
         # Prepare the prompt
         prompt = f"""
         Extract all stock information from the following text. Look for:
-        1. Stock symbols/tickers
-        2. Company names
-        3. Number of shares
-        4. Share prices
-        5. Purchase dates
-        6. Any relevant financial metrics
-
-        Format the response as a list of JSON objects, with each object containing:
-        {{
-            "symbol": "ticker symbol",
-            "company_name": "company name",
-            "shares": number of shares (if found),
-            "price": price (if found),
-            "date": "date" (if found),
-            "metrics": "any additional metrics"
-        }}
-
-        Text content:
+        Stock symbols/tickers
+        Seperate them with a , and space
         {text}
         """
 
@@ -172,36 +156,15 @@ def upload_file():
                     os.remove(filepath)
         
         logger.info(f"Successfully processed {len(results)} files")  # Add this for debugging
+        print(results)
         return jsonify({
             'message': f'Successfully processed {len(results)} files',
             'results': results
         }), 200
+    
         
     except Exception as e:
         logger.error(f"Error processing files: {str(e)}")  # Add this for debugging
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/portfolio', methods=['GET'])
-def get_portfolio():
-    """Get current portfolio analysis"""
-    try:
-        # You can modify this to return whatever portfolio data you need
-        return jsonify({
-            'stocks': [
-                {
-                    'symbol': 'AAPL',
-                    'company_name': 'Apple Inc.',
-                    'shares': 100,
-                    'current_price': 150.23,
-                    'total_value': 15023.00
-                }
-                # Add more stocks as needed
-            ],
-            'total_value': 15023.00,
-            'total_stocks': 1
-        }), 200
-    except Exception as e:
-        logger.error(f"Error retrieving portfolio: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
